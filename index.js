@@ -18,14 +18,21 @@ const setup = () => {
 
     const stage = new PIXI.Container(); 
     const objs = [];
-    const map = new Map(stage);
-    objs.push(map);
-    objs.push(new Player(stage));
+
+    objs.push(new Map(stage));
+
+    const player = new Player(stage);
+    objs.push(player);
+
+    stage.x = 0;
+    stage.y = 0;
 
     (animate = () => {
         requestAnimationFrame(animate);
-        position.tick();
-        map.update(position);
+        player.update(position);
+        const camera = player.camera();
+        stage.x = camera.x;
+        stage.y = camera.y;
         renderer.render(stage);
     })();
 };

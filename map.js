@@ -29,17 +29,6 @@ const Map = class {
 				this.sprites.push(sprite);
 			}
 		}
-		this.oldDx = this.oldDy = 0;
-	}
-
-	update(movement) {
-		const {dx, dy} = movement;
-		this.sprites.forEach(s => {
-			s.x -= dx - this.oldDx;
-			s.y -= dy - this.oldDy;
-		});
-		this.oldDx = dx;
-		this.oldDy = dy;
 	}
 };
 

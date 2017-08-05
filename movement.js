@@ -3,8 +3,6 @@ const keyboard = require('./keyboard');
 const setup = () => {
 
 	const p = {
-		dx: 0,
-		dy: 0,
 		vx: 0,
 		vy: 0
 	};
@@ -27,11 +25,6 @@ const setup = () => {
 	keys.a.release = () => p.vx = keys.d.isDown ? +SPEED : 0;
 	keys.s.release = () => p.vy = keys.w.isDown ? -SPEED : 0;
 	keys.d.release = () => p.vx = keys.a.isDown ? -SPEED : 0;
-
-	p.tick = () => {
-		p.dx += p.vx;
-		p.dy += p.vy;
-	};
 
 	return p;
 };
