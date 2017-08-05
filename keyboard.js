@@ -13,7 +13,6 @@ module.exports = char => {
   key.release = undefined;
 
   key.downHandler = event => {
-    console.log(event.keyCode);
     if (event.keyCode === key.code) {
       if (key.isUp && key.press) {
         key.press();

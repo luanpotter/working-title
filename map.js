@@ -16,7 +16,8 @@ range(200*200 / 10).forEach(() => {
 const Map = class {
 
 	constructor(stage) {
-		var tileset  = PIXI.BaseTexture.fromImage('images/tileset.png');
+		this.sprites = [];
+		const tileset  = PIXI.BaseTexture.fromImage('images/tileset.png');
 		for (let i = 0; i < level.length; i++) {
 			for (let j = 0; j < level[i].length; j++) {
 				const id = level[i][j];
@@ -25,11 +26,20 @@ const Map = class {
 				sprite.x = i*16;
 				sprite.y = j*16;
 				stage.addChild(sprite);
+				this.sprites.push(sprite);
 			}
 		}
+		this.oldDx = this.oldDy = 0;
 	}
 
-	tick() {
+	update(movement) {
+		const {dx, dy} = movement;
+		this.sprites.forEach(s => {
+			s.x -= dx - this.oldDx;
+			s.y -= dy - this.oldDy;
+		});
+		this.oldDx = dx;
+		this.oldDy = dy;
 	}
 };
 

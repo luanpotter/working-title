@@ -2,9 +2,10 @@ const PIXI = require('pixi.js');
 
 const Player = require('./player.js');
 const Map = require('./map.js');
+const movement = require('./movement');
 
 const setup = () => {
-    const texture = PIXI.utils.TextureCache['images/tileset.png'];
+    const position = movement();
 
     const renderer = new PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {
         antialias: true,
@@ -17,12 +18,14 @@ const setup = () => {
 
     const stage = new PIXI.Container(); 
     const objs = [];
-    objs.push(new Map(stage, texture));
+    const map = new Map(stage);
+    objs.push(map);
     objs.push(new Player(stage));
 
     (animate = () => {
         requestAnimationFrame(animate);
-        objs.forEach(obj => obj.tick());
+        position.tick();
+        map.update(position);
         renderer.render(stage);
     })();
 };
