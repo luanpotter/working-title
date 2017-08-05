@@ -1,6 +1,6 @@
 const PIXI = require('pixi.js');
 const { rand, empty, range, arrEq, inside } = require('./util.js');
-const { cos, sin, PI } = Math;
+const { cos, sin, PI, floor } = Math;
 
 const level = empty(200).map(_ => empty(200).map(_ => 10));
 
@@ -88,28 +88,51 @@ const fixCell = (i, j) => {
 	level[i][j] = Object.keys(dirts).find(v => dirts[v].some(dtv => arrEq(dtv, borders))) || 7;
 };
 
-level.forEach((line, i) => line.forEach((cell, j) => {
-	if (isDirt(cell)) {
-		fixCell(i, j);
-	}
-}));
+const fixDirts = () => {
+	level.forEach((line, i) => line.forEach((cell, j) => {
+		if (isDirt(cell)) {
+			fixCell(i, j);
+		}
+	}));
+};
+fixDirts();
 
 const Map = class {
 
 	constructor(stage) {
 		this.sprites = [];
-		const tileset  = PIXI.BaseTexture.fromImage('images/tileset.png');
+		this.spriteMap = {};
+		this.tileset  = PIXI.BaseTexture.fromImage('images/tileset.png');
 		for (let i = 0; i < level.length; i++) {
 			for (let j = 0; j < level[i].length; j++) {
 				const id = level[i][j];
-				const texture = new PIXI.Texture(tileset, new PIXI.Rectangle(16*(id % 6), 16*Math.floor(id / 6), 16, 16));
+				const texture = new PIXI.Texture(this.tileset, new PIXI.Rectangle(16*(id % 6), 16*Math.floor(id / 6), 16, 16));
 				const sprite = new PIXI.Sprite(texture);
 				sprite.x = i*16;
 				sprite.y = j*16;
 				stage.addChild(sprite);
+				this.spriteMap[i + ':' + j] = sprite;
 				this.sprites.push(sprite);
 			}
 		}
+	}
+
+	redraw(i, j) {
+		const id = level[i][j];
+		const texture = new PIXI.Texture(this.tileset, new PIXI.Rectangle(16*(id % 6), 16*Math.floor(id / 6), 16, 16));
+		const sprite = this.spriteMap[i + ':' + j];
+		sprite.texture = texture;
+	}
+
+	find(entity) {
+		return [floor(entity.sprite.x / 16), floor(entity.sprite.y / 16)];
+	}
+
+	set(pos, block) {
+		const [i, j] = pos;
+		level[i][j] = block;
+		fixDirts();
+		this.redraw(i, j);
 	}
 };
 

@@ -11,12 +11,22 @@ const Player = class {
 		this.sprite.y = 100;
 		stage.addChild(this.sprite);
 
-		keyboard('q').press = () => console.log(this.sprite.x, this.sprite.y);
+		this.block = 10;
+		keyboard('1').press = () => this.block = 10;
+		keyboard('2').press = () => this.block = 7;
+
+		this.selector = new PIXI.Graphics();
+		this.selector.lineStyle(1, 0xFF0000);
+		this.selector.drawRect(0, 0, 16, 16);
+		stage.addChild(this.selector);
 	}
 
 	update(position) {
 		this.sprite.x += position.vx;
 		this.sprite.y += position.vy;
+
+		this.selector.x = 16 * Math.floor(this.sprite.x / 16);
+		this.selector.y = 16 * Math.floor(this.sprite.y / 16);
 	}
 
 	camera() {

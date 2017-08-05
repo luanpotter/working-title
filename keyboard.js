@@ -3,7 +3,9 @@ const MAP = {
   'a': 65,
   's': 83,
   'd': 68,
-  'q': 81
+  'q': 81,
+  '1': 49,
+  '2': 50
 };
 module.exports = char => {
   const key = {};

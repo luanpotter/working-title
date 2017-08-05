@@ -1,4 +1,5 @@
 const PIXI = require('pixi.js');
+const keyboard = require('./keyboard');
 
 const Player = require('./player.js');
 const Map = require('./map.js');
@@ -19,10 +20,13 @@ const setup = () => {
     const stage = new PIXI.Container(); 
     const objs = [];
 
-    objs.push(new Map(stage));
+    const map = new Map(stage);
+    objs.push(map);
 
     const player = new Player(stage);
     objs.push(player);
+
+    keyboard('q').press = () => map.set(map.find(player), player.block);
 
     stage.x = 0;
     stage.y = 0;
