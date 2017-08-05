@@ -1,4 +1,5 @@
 const PIXI = require('pixi.js');
+const keyboard = require('./keyboard');
 
 const MAX_W = MAX_H = 16*200;
 
@@ -9,6 +10,8 @@ const Player = class {
 		this.sprite.x = 100;
 		this.sprite.y = 100;
 		stage.addChild(this.sprite);
+
+		keyboard('q').press = () => console.log(this.sprite.x, this.sprite.y);
 	}
 
 	update(position) {
