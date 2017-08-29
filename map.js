@@ -38,6 +38,7 @@ range(200*200 / 10).forEach(() => {
 // generate dirt
 const dirt = 7;
 
+if (false)
 range(5 + rand(5)).forEach(() => {
 	const cx = rand(level.length);
 	const cy = rand(level[0].length);
@@ -60,6 +61,7 @@ range(5 + rand(5)).forEach(() => {
 });
 
 range(4).forEach(i => range(10).forEach(j => level[10 + i][10 + j] = 7));
+level[9][10 + 4] = level[10 + 2][9] = level[10 + 2][20] = level[14][10 + 4] = 7;
 
 // fix dirt borders
 
@@ -73,25 +75,48 @@ const dirts = {
 	12: [[4, 5, 6, 7, 8], [5, 6, 7, 8], [4, 5, 6, 7], [5, 6, 7]],
 	13: [[6, 7, 8], [7, 8], [6, 7]],
 	14: [[1, 2, 6, 7, 8], [1, 6, 7, 8], [1, 2, 7, 8], [1, 7, 8]],
-	18: [[4]],
-	19: [[2]],
-	24: [[6]],
-	25: [[8]]
+	18: [[3]],
+	19: [[1]],
+	24: [[5]],
+	25: [[7]]
 };
 
-const isDirt = tile => [ 0, 1, 2, 6, 7, 8, 12, 13, 14, 18, 29, 24, 25 ].includes(tile);
+const isDirt = tile => [ 0, 1, 2, 6, 7, 8, 12, 13, 14, 18, 29, 24, 25, 20, 21, 26, 27, 22, 23, 28, 29 ].includes(tile);
 
-const fixCell = (i, j) => {
+const getBorders = (i, j) => {
 	const GET = [ [+1, 0], [+1, -1], [0, -1], [-1, -1], [-1, 0], [-1, +1], [0, +1], [+1, +1] ];
 	const getIdx = idx => get(level, i + GET[idx][0], j + GET[idx][1]);
-	const borders = range(8).filter(idx => isGrass(getIdx(idx))).map(t => t + 1);
-	level[i][j] = Object.keys(dirts).find(v => dirts[v].some(dtv => arrEq(dtv, borders))) || 7;
+	return range(8).filter(idx => isGrass(getIdx(idx))).map(t => t + 1);
 };
+
+const getProperDirtValueForCell = (i, j) => {
+	const borders = getBorders(i, j);
+	const SIDES = [1, 3, 5, 7];
+	const countSides = SIDES.filter(i => borders.includes(i)).length;
+	if (countSides === 0) {
+		const diagonals = borders.filter(i => !SIDES.includes(i));
+		if (diagonals.length === 0) {
+			return 7;
+		} else if (diagonals.length === 2) {
+			const id = diagonals.sort().join('');
+			return { '24': 22, '46': 28, '68': 29, '28': 23}[id];
+		}
+	} else if (countSides === 1) {
+		//return 18;
+	} else if (countSides === 2) {
+	} else if (countSides === 3) {
+		return { 1: 27, 3: 26, 5: 21, 7: 20 }[SIDES.find(i => !borders.includes(i))];
+	} else if (countSides === 4) {
+	}
+	return Object.keys(dirts).find(v => dirts[v].some(dtv => arrEq(dtv, borders))) || 7;
+}
 
 const fixDirts = () => {
 	level.forEach((line, i) => line.forEach((cell, j) => {
 		if (isDirt(cell)) {
-			fixCell(i, j);
+			const dirtId = getProperDirtValueForCell(i, j);
+			if (parseInt(dirtId) === 0) console.log(dirtId);
+			level[i][j] = dirtId;
 		}
 	}));
 };
@@ -128,11 +153,20 @@ const Map = class {
 		return [floor(entity.sprite.x / 16), floor(entity.sprite.y / 16)];
 	}
 
+	say(pos) {
+		const [i, j] = pos;
+		console.log(i, j, level[i][j], getBorders(i, j));
+	}
+
 	set(pos, block) {
 		const [i, j] = pos;
 		level[i][j] = block;
 		fixDirts();
-		this.redraw(i, j);
+		for (let di = i - 1; di <= i + 1; di++) {
+			for (let dj = j - 1; dj <= j + 1; dj++) {
+				this.redraw(di, dj);
+			}
+		}
 	}
 };
 

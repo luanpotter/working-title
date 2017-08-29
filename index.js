@@ -27,6 +27,7 @@ const setup = () => {
     objs.push(player);
 
     keyboard('q').press = () => map.set(map.find(player), player.block);
+    keyboard('e').press = () => map.say(map.find(player));
 
     stage.x = 0;
     stage.y = 0;
