@@ -1,5 +1,6 @@
 const PIXI = require('pixi.js');
 const keyboard = require('./keyboard');
+const Block = require('./block');
 
 const MAX_W = MAX_H = 16*200;
 
@@ -12,8 +13,8 @@ const Player = class {
 		stage.addChild(this.sprite);
 
 		this.block = 10;
-		keyboard('1').press = () => this.block = 10;
-		keyboard('2').press = () => this.block = 7;
+		keyboard('1').press = () => this.block = Block.GRASS;
+		keyboard('2').press = () => this.block = Block.DIRT;
 
 		this.selector = new PIXI.Graphics();
 		this.selector.lineStyle(1, 0xFF0000);

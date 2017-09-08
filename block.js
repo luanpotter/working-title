@@ -24,6 +24,11 @@ const Block = class {
 		return sprite;
 	}
 
+	redraw(sprite) {
+		sprite.texture = this.generateTexture();
+		sprite.rotation = Math.PI / 2 * this.rotation;
+	}
+
 	isGrass() {
 		return this.id === Block.GRASS;
 	}

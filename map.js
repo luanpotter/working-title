@@ -66,18 +66,32 @@ level[14][10 + 4] = new Block(Block.DIRT);
 const getBorders = (i, j) => {
 	const GET = [ [+1, 0], [+1, -1], [0, -1], [-1, -1], [-1, 0], [-1, +1], [0, +1], [+1, +1] ];
 	const getIdx = idx => get(level, i + GET[idx][0], j + GET[idx][1]);
-	return range(8).filter(idx => getIdx(idx).isGrass()).map(t => t + 1);
+	return range(8).filter(idx => getIdx(idx).isDirt());
 };
 
-const getDirtVariation = (i, j) => {
-	return 8;
+const getDirtMetadata = (i, j) => {
+	const borders = getBorders(i, j);
+	const cross = borders.filter(i => i % 2 === 0);
+	if (cross.length === 0) {
+		return [ 0, 0 ];
+	}
+	if (cross.length === 1) {
+		const map = { 0:3, 2:2, 4:1, 6:0 };
+		return [ 1, map[cross[0]] ];
+	}
+	if (cross.length === 3) {
+		const map = { 0:2, 2:1, 4:0, 6:3 };
+		return [ 5, map[[0, 2, 4, 6].find(el => !cross.includes(el))] ];
+	}
+	return [ 8, 0 ];
 };
 
 const fixDirts = () => {
 	level.forEach((line, i) => line.forEach((cell, j) => {
 		if (cell.isDirt()) {
-			level[i][j].variation = getDirtVariation(i, j);
-			// level[i][j].rotation = 2;
+			const [ variation, rotation ] = getDirtMetadata(i, j);
+			level[i][j].variation = variation;
+			level[i][j].rotation = rotation;
 		}
 	}));
 };
@@ -91,8 +105,8 @@ const Map = class {
 		for (let i = 0; i < level.length; i++) {
 			for (let j = 0; j < level[i].length; j++) {
 				const sprite = level[i][j].generateSprite();
-				sprite.x = i*16;
-				sprite.y = j*16;
+				sprite.x = i*16 + 8;
+				sprite.y = j*16 + 8;
 				stage.addChild(sprite);
 				this.spriteMap[i + ':' + j] = sprite;
 				this.sprites.push(sprite);
@@ -101,8 +115,7 @@ const Map = class {
 	}
 
 	redraw(i, j) {
-		const sprite = this.spriteMap[i + ':' + j];
-		sprite.texture = level[i][j].generateTexture();
+		level[i][j].redraw(this.spriteMap[i + ':' + j]);
 	}
 
 	find(entity) {
@@ -111,12 +124,13 @@ const Map = class {
 
 	say(pos) {
 		const [i, j] = pos;
-		console.log(i, j, level[i][j], getBorders(i, j));
+		console.log(i, j);
+		console.log(i, j, level[i][j]);
 	}
 
 	set(pos, block) {
 		const [i, j] = pos;
-		level[i][j] = block;
+		level[i][j] = new Block(block);
 		fixDirts();
 		for (let di = i - 1; di <= i + 1; di++) {
 			for (let dj = j - 1; dj <= j + 1; dj++) {
