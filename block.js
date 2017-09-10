@@ -47,4 +47,6 @@ const STARTS = {
 	[Block.GRASS] : 15
 };
 
+Block.NULL = new Block(-1);
+
 module.exports = Block;

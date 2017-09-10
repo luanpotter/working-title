@@ -18,10 +18,10 @@ const set = (arr, x, y, v) => {
 
 const get = (arr, x, y) => {
 	if (x < 0 || y < 0) {
-		return;
+		return Block.NULL;
 	}
 	if (x >= arr.length || y >= arr[x].length) {
-		return;
+		return Block.NULL;
 	}
 	return arr[x][y];
 };
